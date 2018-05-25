@@ -1,0 +1,171 @@
+header {
+  position: relative;
+  color: white;
+  padding: 30px 0;
+  z-index: 999;
+}
+
+/* todo animated bg between header */
+#featured::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 450px;
+  width: 100%;
+  opacity: 0.6;
+  z-index: -1;
+}
+
+#featured::after {
+  background: linear-gradient(
+    146deg,
+    rgba(155, 173, 250, 0) 16%,
+    rgba(109, 215, 197, 0.9) 100%,
+    rgba(109, 195, 216, 0.9) 100%
+  );
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 470px;
+  width: 100%;
+  opacity: 1;
+  z-index: -1;
+  overflow: hidden;
+}
+
+@keyframes animateBg {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 320px 320px;
+  }
+}
+
+#featured {
+  position: relative;
+  padding: 210px 0 150px 0;
+  margin-top: -160px;
+  background-image: linear-gradient(
+    146deg,
+    rgba(155, 173, 250, 0.9) 16%,
+    rgba(109, 215, 197, 0.9) 100%,
+    rgba(109, 195, 216, 0.9) 100%
+  );
+}
+
+#featured a:hover {
+  color: white;
+  background: transparent !important;
+}
+
+#featured svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4vw;
+}
+
+#featured h1,
+#featured h2 {
+  color: white;
+  font-weight: 100;
+}
+
+#featured p {
+  color: white;
+  font-weight: 100;
+}
+
+.ui.secondary.menu.white .item {
+  color: white;
+}
+
+.ui.secondary.menu .item.active,
+.ui.secondary.menu .item.active:hover {
+  color: white;
+  background: linear-gradient(
+    146deg,
+    rgba(48, 35, 174, 0.8) 16%,
+    rgba(200, 109, 215, 0.8) 100%,
+    rgba(201, 109, 216, 0.8) 100%
+  );
+}
+
+.ui.secondary.menu h1 a.active {
+  background: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: white;
+  color: white;
+}
+
+.ui.secondary.menu.white .item:hover {
+  color: white;
+}
+
+.ui.basic.button.white {
+  color: #fff !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+}
+
+.ui.basic.button.white:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.featured-drawing {
+  border: 1px solid #ddd;
+  position: absolute;
+  height: 200px;
+  padding: 80px 90px;
+  background: #dfdfdf;
+  z-index: 10;
+  margin-top: 60px;
+}
+
+.header-with-padding {
+  padding-top: 50px;
+}
+
+.ui.form .disabled.field,
+.ui.form .disabled.fields .field,
+.ui.form .field:disabled {
+  opacity: 0.8;
+}
+
+.centered {
+  text-align: center;
+}
+
+.hide {
+  display: none !important;
+}
+
+.device {
+  text-align: center;
+  cursor: pointer;
+}
+
+a.logo {
+  color: #000;
+  font-size: 15px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.card .icon.add-device {
+  margin: 0 auto;
+  line-height: 100px;
+  width: 100%;
+  height: 100%;
+}
+
+.content .icons {
+  float: right;
+}
+
+.content .icons .icon {
+  cursor: pointer;
+}
