@@ -1,0 +1,45 @@
+<!-- views/pages/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <% include ../partials/head %>
+    <link rel="stylesheet" href="/css/colorpicker.css">
+    <script src="/js/bootstrap-colorpicker.js" type="text/javascript"></script>
+    <script src="/js/tests.js" type="text/javascript" /></script>
+
+</head>
+
+<body class="container">
+
+  <header>
+    <% include ../partials/header %>
+  </header>
+
+  <main>
+    <div class="jumbotron">
+      <h1>Tests</h1>
+      <p>Turn on the light &amp; change the color locally</p>
+
+      <button type="button" class="btn btn-success device-on">On</button>
+      <button type="button" class="btn btn-danger device-off">Off</button>
+
+      <div class="input-append color color-picker" data-color="rgb(255, 146, 180)" data-color-format="rgb">
+        <input type="text" class="span2" value="">
+        <span class="add-on">
+          <i style="background-color: rgb(255, 146, 180)"></i>
+        </span>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <% include ../partials/footer %>
+  </footer>
+
+</body>
+
+</html>

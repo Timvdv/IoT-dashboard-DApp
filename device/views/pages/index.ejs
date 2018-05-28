@@ -1,0 +1,49 @@
+<!-- views/pages/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <% include ../partials/head %>
+</head>
+
+<body class="container">
+
+  <header>
+    <% include ../partials/header %>
+  </header>
+
+  <main>
+    <div class="jumbotron">
+      <h1>
+        <%-(device && device.returnValues.name)%>
+      </h1>
+      <p>Your device ID is:
+        <strong>
+          <%=device_id %>
+        </strong>
+      </p>
+
+      <p>
+        Your address:
+        <strong>
+          <%=device.address%>
+        </strong>
+      </p>
+
+      <p>
+        Current state:
+        <strong>
+          <%-(device && parseInt(device.returnValues.state, 10) === 1 ? "On" : "Off")%>
+        </strong>
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <% include ../partials/footer %>
+  </footer>
+
+</body>
+
+</html>

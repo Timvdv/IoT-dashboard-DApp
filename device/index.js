@@ -6,7 +6,21 @@ var abi = require("./DeviceContractAbi");
 var file = "privatekey.json";
 var device = require("./device.js");
 
+// server.js
+// load the things we need
+var express = require("express");
+var app = express();
+
+// set the view engine to ejs
+app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
+
+// use res.render to load up an ejs view file
+
 var device_id = null;
+var local_device = {
+  returnValues: {}
+};
 
 // Make sure web3 is globally available
 if (typeof web3 !== "undefined") {
@@ -26,7 +40,7 @@ init();
 function init() {
   device.init();
 
-  jsonfile.readFile(file, function (err, obj) {
+  jsonfile.readFile(file, function(err, obj) {
     console.log("reading file from storage");
 
     if (!obj) {
@@ -42,7 +56,7 @@ function init() {
         privatekey: account.privateKey
       };
 
-      jsonfile.writeFile(file, obj, function (err) {
+      jsonfile.writeFile(file, obj, function(err) {
         if (!err) {
           console.log("New privatekey.json file written");
           connectToContract(obj);
@@ -87,8 +101,7 @@ function connectToContract(wallet) {
           eventObj.returnValues
         );
         if (eventObj.returnValues.device === wallet.address) {
-          device_id = eventObj.returnValues.tokenId;
-          console.log("Found my device ID from history", device_id);
+          foundDevice(eventObj);
         }
       }
     }
@@ -98,11 +111,10 @@ function connectToContract(wallet) {
    * When a device is created, it will emit a created function.
    * We use this to listen and save the tokenId
    */
-  contract.events.DeviceCreated(function (error, result) {
+  contract.events.DeviceCreated(function(error, result) {
     if (!error) {
       if (result.returnValues.device === wallet.address) {
-        device_id = result.returnValues.tokenId;
-        console.log("Found my device ID", device_id);
+        foundDevice(result);
       }
     } else {
       console.log("Something went wrong, could not find created event");
@@ -113,7 +125,7 @@ function connectToContract(wallet) {
    * When a device gets triggered
    * This function will make sure to send the correct response
    */
-  contract.events.Trigger(function (error, result) {
+  contract.events.Trigger(function(error, result) {
     if (!error) {
       if (device_id) {
         if (result.returnValues.tokenId === device_id) {
@@ -133,11 +145,53 @@ function connectToContract(wallet) {
   });
 }
 
+function foundDevice(device_object) {
+  device_id = device_object.returnValues.tokenId;
+  local_device = device_object;
+
+  console.log("Found my device ID", device_id);
+}
+
 /**
  * Now we have the wallet.
  * Watch for events on the blockchain
  */
-function watchForEvents(wallet) { }
+function watchForEvents(wallet) {}
 
-// Start reading from stdin so we don't exit.
-process.stdin.resume();
+// index page
+app.get("/", function(req, res) {
+  res.render("pages/index", {
+    device_id: device_id,
+    device: local_device
+  });
+});
+
+// index page
+app.get("/test", function(req, res) {
+  res.render("pages/tests");
+});
+
+// change color
+app.get("/command/color/:r/:g/:b/:a", function(req, res) {
+  if (req.params.r && req.params.g && req.params.b && req.params.a) {
+    device.changeColor(req.params.r, req.params.g, req.params.b, req.params.a);
+    res.json({ success: true });
+  }
+});
+
+// enter command
+app.get("/command/:action", function(req, res) {
+  if (req.params.action === "on") {
+    console.log("Turning on");
+    device.lightsOn();
+    res.json({ success: true });
+  }
+  if (req.params.action === "off") {
+    console.log("Turning off");
+    device.lightsOff();
+    res.json({ success: true });
+  }
+});
+
+app.listen(8080);
+console.log("8080 is the magic port");
