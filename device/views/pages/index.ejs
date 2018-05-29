@@ -14,6 +14,14 @@
   </header>
 
   <main>
+    <hr />
+    <div class="well well-lg">
+      Your device address:
+      <strong>
+        <%=wallet%>
+      </strong>
+    </div>
+    <hr />
     <div class="jumbotron">
       <h1>
         <%-(device && device.returnValues.name)%>
@@ -25,16 +33,9 @@
       </p>
 
       <p>
-        Your address:
-        <strong>
-          <%=device.address%>
-        </strong>
-      </p>
-
-      <p>
         Current state:
         <strong>
-          <%-(device && parseInt(device.returnValues.state, 10) === 1 ? "On" : "Off")%>
+          <%-(device_state && parseInt(device_state.state, 10) === 1 ? "On" : "Off")%>
         </strong>
       </p>
     </div>

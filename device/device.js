@@ -7,7 +7,11 @@ var brightness = 128;
 var exports = (module.exports = {});
 ws281x.init(8);
 
+rainbow_interval = null;
+var offset = 0;
+
 exports.lightsOff = function() {
+  clearInterval(rainbow_interval);
   ws281x.init(8);
   for (var i = 0; i < NUM_LEDS; i++) {
     pixelData[i] = color(0, 0, 0);
@@ -35,26 +39,16 @@ Object.keys(signals).forEach(function(signal) {
   });
 });
 
-// ---- animation-loop
-var offset = 0;
-// setInterval(function () {
-//   for (var i = 0; i < NUM_LEDS; i++) {
-//     pixelData[i] = wheel(((i * 256 / NUM_LEDS) + offset) % 256);
-//   }
-
-//   offset = (offset + 1) % 256;
-//   ws281x.render(pixelData);
-// }, 1000 / 30);
-
 exports.init = function() {
   ws281x.init(8);
 };
 
 exports.lightsOn = function() {
+  clearInterval(rainbow_interval);
   ws281x.init(8);
 
   for (var i = 0; i < NUM_LEDS; i++) {
-    pixelData[i] = wheel((i * 256 / NUM_LEDS + offset) % 256);
+    pixelData[i] = color(255, 255, 255);
   }
 
   offset = (offset + 1) % 256;
@@ -62,6 +56,7 @@ exports.lightsOn = function() {
 };
 
 exports.changeColor = function(r, g, b, a) {
+  clearInterval(rainbow_interval);
   ws281x.init(8);
 
   for (var i = 0; i < NUM_LEDS; i++) {
@@ -72,7 +67,18 @@ exports.changeColor = function(r, g, b, a) {
   ws281x.render(pixelData);
 };
 
-console.log("Rainbow started. Press <ctrl>+C to exit.");
+exports.rainbow = function() {
+  clearInterval(rainbow_interval);
+  // ---- animation-loop
+  rainbow_interval = setInterval(function() {
+    for (var i = 0; i < NUM_LEDS; i++) {
+      pixelData[i] = wheel((i * 256 / NUM_LEDS + offset) % 256);
+    }
+
+    offset = (offset + 1) % 256;
+    ws281x.render(pixelData);
+  }, 1000 / 30);
+};
 
 // generate rainbow colors accross 0-255 positions.
 function wheel(pos) {

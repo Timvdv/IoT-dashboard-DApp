@@ -17,10 +17,15 @@ app.use(express.static(__dirname + "/public"));
 
 // use res.render to load up an ejs view file
 
+var contract;
 var device_id = null;
 var local_device = {
   returnValues: {}
 };
+var local_state = {
+  returnValues: {}
+};
+var wallet = {};
 
 // Make sure web3 is globally available
 if (typeof web3 !== "undefined") {
@@ -59,7 +64,8 @@ function init() {
       jsonfile.writeFile(file, obj, function(err) {
         if (!err) {
           console.log("New privatekey.json file written");
-          connectToContract(obj);
+          wallet = obj;
+          connectToContract();
         } else {
           console.error("Something went wrong while writing file", err);
         }
@@ -67,7 +73,8 @@ function init() {
     } else {
       console.log(`Your address: ${obj.address}`);
       console.log(`Private key: `, obj.privatekey);
-      connectToContract(obj);
+      wallet = obj;
+      connectToContract();
     }
   });
 }
@@ -76,9 +83,9 @@ function init() {
  * Now we have the wallet.
  * Watch for events on the blockchain
  */
-function connectToContract(wallet) {
+function connectToContract() {
   // Initialize the smart contract
-  var contract = new this.web3.eth.Contract(
+  contract = new this.web3.eth.Contract(
     abi,
     "0xe7765ae31676b7392ce7f10c3c0bd6e0d2c9b545"
   );
@@ -94,14 +101,20 @@ function connectToContract(wallet) {
       toBlock: "latest"
     },
     (error, events) => {
-      for (let i = 0; i < events.length; i++) {
-        var eventObj = events[i];
-        console.log(
-          `Created: ${eventObj.returnValues.name}`,
-          eventObj.returnValues
-        );
-        if (eventObj.returnValues.device === wallet.address) {
-          foundDevice(eventObj);
+      if (error) {
+        console.log(error);
+      }
+
+      if (events) {
+        for (let i = 0; i < events.length; i++) {
+          var eventObj = events[i];
+          console.log(
+            `Created: ${eventObj.returnValues.name}`,
+            eventObj.returnValues
+          );
+          if (eventObj.returnValues.device === wallet.address) {
+            foundDevice(eventObj);
+          }
         }
       }
     }
@@ -134,6 +147,8 @@ function connectToContract(wallet) {
           } else {
             device.lightsOff();
           }
+
+          foundDeviceState(result);
           console.log("Device state set to: ", result.returnValues.state);
         }
       } else {
@@ -148,8 +163,21 @@ function connectToContract(wallet) {
 function foundDevice(device_object) {
   device_id = device_object.returnValues.tokenId;
   local_device = device_object;
-
   console.log("Found my device ID", device_id);
+  console.log(local_device);
+
+  contract.methods
+    .getDevice(device_id)
+    .call()
+    .then(function(result) {
+      foundDeviceState(result);
+    });
+}
+
+function foundDeviceState(device_object) {
+  local_state = device_object.returnValues || device_object;
+  console.log("Found my device State", device_id);
+  console.log(device_object);
 }
 
 /**
@@ -161,8 +189,10 @@ function watchForEvents(wallet) {}
 // index page
 app.get("/", function(req, res) {
   res.render("pages/index", {
+    wallet: wallet.address,
     device_id: device_id,
-    device: local_device
+    device: local_device,
+    device_state: local_state
   });
 });
 
@@ -189,6 +219,11 @@ app.get("/command/:action", function(req, res) {
   if (req.params.action === "off") {
     console.log("Turning off");
     device.lightsOff();
+    res.json({ success: true });
+  }
+  if (req.params.action === "rainbow") {
+    console.log("Turning on rainbow");
+    device.rainbow();
     res.json({ success: true });
   }
 });

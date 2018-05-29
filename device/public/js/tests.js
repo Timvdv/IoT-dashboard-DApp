@@ -17,4 +17,8 @@ $(document).ready(function() {
   $(".device-off").click(function() {
     $.get("/command/off", function(data) {});
   });
+
+  $(".device-rainbow").click(function() {
+    $.get("/command/rainbow", function(data) {});
+  });
 });

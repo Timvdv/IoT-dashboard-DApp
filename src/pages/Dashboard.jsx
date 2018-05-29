@@ -342,7 +342,9 @@ class Dashboard extends Component {
                 onClick={e => this.removeDevice(device)}
               />
             </Icon.Group>
-            <Card.Header>{device.deviceName}</Card.Header>
+            <Card.Header title={device.tokenId}>
+              {device.deviceName}
+            </Card.Header>
             <Card.Meta>{device.deviceType}</Card.Meta>
           </Card.Content>
           <Card.Content extra>
