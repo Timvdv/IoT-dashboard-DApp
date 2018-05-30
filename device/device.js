@@ -79,6 +79,7 @@ exports.rainbow = function() {
 
   // ---- animation-loop
   rainbow_interval = setInterval(function() {
+    if (phase == undefined) phase = 0;
     red = Math.sin(frequency * loop + 2 + phase) * width + center;
     green = Math.sin(frequency * loop + 0 + phase) * width + center;
     blue = Math.sin(frequency * loop + 4 + phase) * width + center;
@@ -92,12 +93,6 @@ exports.rainbow = function() {
     ws281x.render(pixelData);
   }, 100);
 };
-
-function colorText(str, phase) {
-  if (phase == undefined) phase = 0;
-
-  for (var i = 0; i < str.length; ++i) {}
-}
 
 // generate rainbow colors accross 0-255 positions.
 function wheel(pos) {
