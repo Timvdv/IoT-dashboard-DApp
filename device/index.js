@@ -108,10 +108,10 @@ function connectToContract() {
       if (events) {
         for (let i = 0; i < events.length; i++) {
           var eventObj = events[i];
-          console.log(
-            `Created: ${eventObj.returnValues.name}`,
-            eventObj.returnValues
-          );
+          // console.log(
+          //   `Created: ${eventObj.returnValues.name}`,
+          //   eventObj.returnValues
+          // );
           if (eventObj.returnValues.device === wallet.address) {
             foundDevice(eventObj);
           }

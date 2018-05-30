@@ -72,13 +72,15 @@ exports.rainbow = function() {
   ws281x.init(8);
   // ---- animation-loop
   rainbow_interval = setInterval(function() {
-    for (var i = 0; i < NUM_LEDS; i++) {
-      pixelData[i] = wheel((i * 256 / NUM_LEDS + offset) % 256);
+    var i = NUM_LEDS;
+    while (i--) {
+      pixelData[i] = 0;
     }
+    pixelData[offset] = 0xffffff;
 
-    offset = (offset + 1) % 256;
+    offset = (offset + 1) % NUM_LEDS;
     ws281x.render(pixelData);
-  }, 1000 / 30);
+  }, 100);
 };
 
 // generate rainbow colors accross 0-255 positions.

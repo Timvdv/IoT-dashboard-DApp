@@ -2,7 +2,7 @@ $(document).ready(function() {
   $(".color-picker")
     .colorpicker()
     .on("changeColor", function(ev) {
-      document.body.style.backgroundColor = ev.color.toHex();
+      // document.body.style.backgroundColor = ev.color.toHex();
       const rgba = ev.color.toRGB();
       $.get(
         "/command/color/" + rgba.r + "/" + rgba.g + "/" + rgba.b + "/" + rgba.a,
