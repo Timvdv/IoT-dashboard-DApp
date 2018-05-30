@@ -164,7 +164,6 @@ function foundDevice(device_object) {
   device_id = device_object.returnValues.tokenId;
   local_device = device_object;
   console.log("Found my device ID", device_id);
-  console.log(local_device);
 
   contract.methods
     .getDevice(device_id)
@@ -177,7 +176,6 @@ function foundDevice(device_object) {
 function foundDeviceState(device_object) {
   local_state = device_object.returnValues || device_object;
   console.log("Found my device State", device_id);
-  console.log(device_object);
 }
 
 /**

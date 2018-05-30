@@ -27,7 +27,7 @@ var signals = {
 
 function shutdown(signal, value) {
   console.log("Stopped by " + signal);
-  lightsOff();
+  exports.lightsOff();
   process.nextTick(function() {
     process.exit(0);
   });
@@ -69,6 +69,7 @@ exports.changeColor = function(r, g, b, a) {
 
 exports.rainbow = function() {
   clearInterval(rainbow_interval);
+  ws281x.init(8);
   // ---- animation-loop
   rainbow_interval = setInterval(function() {
     for (var i = 0; i < NUM_LEDS; i++) {
