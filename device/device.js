@@ -76,10 +76,10 @@ exports.rainbow = function() {
   frequency = Math.PI * 2 / 80;
 
   loop = 0;
+  phase = 0;
 
   // ---- animation-loop
   rainbow_interval = setInterval(function() {
-    if (phase == undefined) phase = 0;
     red = Math.sin(frequency * loop + 2 + phase) * width + center;
     green = Math.sin(frequency * loop + 0 + phase) * width + center;
     blue = Math.sin(frequency * loop + 4 + phase) * width + center;
