@@ -70,18 +70,34 @@ exports.changeColor = function(r, g, b, a) {
 exports.rainbow = function() {
   clearInterval(rainbow_interval);
   ws281x.init(8);
+
+  center = 128;
+  width = 127;
+  frequency = Math.PI * 2 / 80;
+
+  loop = 0;
+
   // ---- animation-loop
   rainbow_interval = setInterval(function() {
-    var i = NUM_LEDS;
-    while (i--) {
-      pixelData[i] = 0;
-    }
-    pixelData[offset] = 0xffffff;
+    red = Math.sin(frequency * loop + 2 + phase) * width + center;
+    green = Math.sin(frequency * loop + 0 + phase) * width + center;
+    blue = Math.sin(frequency * loop + 4 + phase) * width + center;
 
-    offset = (offset + 1) % NUM_LEDS;
+    for (var i = 0; i < NUM_LEDS; i++) {
+      pixelData[i] = color(red, green, blue);
+    }
+
+    loop++;
+
     ws281x.render(pixelData);
   }, 100);
 };
+
+function colorText(str, phase) {
+  if (phase == undefined) phase = 0;
+
+  for (var i = 0; i < str.length; ++i) {}
+}
 
 // generate rainbow colors accross 0-255 positions.
 function wheel(pos) {
