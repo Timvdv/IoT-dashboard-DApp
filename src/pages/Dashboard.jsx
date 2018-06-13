@@ -58,8 +58,6 @@ class Dashboard extends Component {
 
     this.contract = null;
     this.coinbase = null;
-
-    this.connectToEthereum();
   }
 
   /**
