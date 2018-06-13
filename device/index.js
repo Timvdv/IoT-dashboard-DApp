@@ -175,6 +175,7 @@ function foundDevice(device_object) {
 
 function foundDeviceState(device_object) {
   local_state = device_object.returnValues || device_object;
+
   console.log("Found my device State", device_id);
 }
 
@@ -186,6 +187,7 @@ function watchForEvents(wallet) {}
 
 // index page
 app.get("/", function(req, res) {
+  console.log(local_device);
   res.render("pages/index", {
     wallet: wallet.address,
     device_id: device_id,

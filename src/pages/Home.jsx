@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Container, Header, Divider, Button, Icon } from "semantic-ui-react";
 import { Link, Redirect } from "react-router-dom";
 import Featured from "../components/Featured";
+import AppHeader from "../components/Header";
 
 /**
  * Homepage, this page shows information about the decentralized IoT dashboard
@@ -9,28 +10,26 @@ import Featured from "../components/Featured";
 class Home extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      version: localStorage.getItem("iot_dashboard_version") || "1"
-    };
   }
 
   render() {
-    // When the second version is active redirect to dashboard
-    if (this.state.version === "2") {
-      return <Redirect to="/dashboard" />;
-    }
-
     return (
       <div>
+        <AppHeader home={true} />
         <Featured>
           <article>
             <h2>Maximum privacy</h2>
-            <p>Control your devices without a middleman who is watching you</p>
+            <p>Control your devices without a middleman who is watching you.</p>
 
-            <Button basic size="large" className="white" to="/login" as={Link}>
-              <Icon name="add user" />
-              Create account
+            <Button
+              basic
+              size="large"
+              className="white"
+              to="/dashboard"
+              as={Link}
+            >
+              <Icon name="browser" />
+              View dashboard
             </Button>
           </article>
         </Featured>
@@ -39,14 +38,16 @@ class Home extends Component {
           <section id="what" className="body">
             <Header as="h2" icon textAlign="center">
               <Icon name="lock" circular />
-              <Header.Content>Secure</Header.Content>
+              <Header.Content>
+                IoT privacy, security &amp; zero downtime
+              </Header.Content>
             </Header>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Perferendis, amet voluptate aliquid maxime cupiditate debitis,
-              dignissimos fugiat, hic aut nesciunt nam cumque numquam tempora
-              sed nobis beatae sit sint dolor consequatur. Aut est fugit magnam
-              et recusandae voluptate! Expedita, amet.
+            <p className="centered">
+              By combining IoT and the blockchain we created a solution which
+              tackels a lot of problems which currently exist in most IoT
+              devices. The blockchain helps securing your devices, removes the
+              middleman and make sure the services are up forever.{" "}
+              <Link to="/dashboard"> View dashboard. </Link>
             </p>
           </section>
         </Container>

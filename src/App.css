@@ -6,6 +6,7 @@ header {
 }
 
 /* todo animated bg between header */
+
 #featured::before {
   content: "";
   position: absolute;
@@ -18,12 +19,7 @@ header {
 }
 
 #featured::after {
-  background: linear-gradient(
-    146deg,
-    rgba(155, 173, 250, 0) 16%,
-    rgba(109, 215, 197, 0.9) 100%,
-    rgba(109, 195, 216, 0.9) 100%
-  );
+  background: linear-gradient( 146deg, rgba(155, 173, 250, 0) 16%, rgba(109, 215, 197, 0.9) 100%, rgba(109, 195, 216, 0.9) 100%);
   content: "";
   position: absolute;
   top: 0;
@@ -48,12 +44,7 @@ header {
   position: relative;
   padding: 210px 0 150px 0;
   margin-top: -160px;
-  background-image: linear-gradient(
-    146deg,
-    rgba(155, 173, 250, 0.9) 16%,
-    rgba(109, 215, 197, 0.9) 100%,
-    rgba(109, 195, 216, 0.9) 100%
-  );
+  background-image: linear-gradient( 146deg, rgba(155, 173, 250, 0.9) 16%, rgba(109, 215, 197, 0.9) 100%, rgba(109, 195, 216, 0.9) 100%);
 }
 
 #featured a:hover {
@@ -87,12 +78,7 @@ header {
 .ui.secondary.menu .item.active,
 .ui.secondary.menu .item.active:hover {
   color: white;
-  background: linear-gradient(
-    146deg,
-    rgba(48, 35, 174, 0.8) 16%,
-    rgba(200, 109, 215, 0.8) 100%,
-    rgba(201, 109, 216, 0.8) 100%
-  );
+  background: linear-gradient( 146deg, rgba(48, 35, 174, 0.8) 16%, rgba(200, 109, 215, 0.8) 100%, rgba(201, 109, 216, 0.8) 100%);
 }
 
 .ui.secondary.menu h1 a.active {
@@ -168,4 +154,15 @@ a.logo {
 
 .content .icons .icon {
   cursor: pointer;
+}
+
+.label-add-device {
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.scanner {
+  display: block;
+  width: 300px;
+  height: 300px;
 }

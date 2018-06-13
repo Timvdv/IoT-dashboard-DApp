@@ -8,6 +8,9 @@ class NoDevices extends Component {
 
     this.state = {};
 
+    /**
+     * Show steps to enter new devices when none are present
+     */
     this.steps = [
       {
         key: "add",

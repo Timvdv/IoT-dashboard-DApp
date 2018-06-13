@@ -8,7 +8,9 @@ A working prototype designed to experiment with the way IoT devices could be con
 * You could use a normal LED, but because I wanted a bit more light I used a [LED ring](https://www.kiwi-electronics.nl/neopixel-ring-12x-ws2812-5050-rgb-led-met-drivers?search=LED%20ring)
 * 3D printed lightbulb, print it slightly bigger so the Raspberry Pi fits. [3D parts](https://www.thingiverse.com/thing:2280081)
 
-## With `testrpc`
+## Installation
+
+### With `testrpc`
 
 > Use port 8545
 
@@ -19,7 +21,7 @@ yarn install
 yarn start
 ```
 
-## With `truffle develop`
+### With `truffle develop`
 
 > Use port 9545
 
@@ -29,4 +31,12 @@ truffle develop
 yarn install
 yarn start
 ```
-# IoT-dashboard-DApp
+
+## Device
+The device code is a bit more lightweigth because it should run
+on a Raspbery Pi Zero.
+
+```
+cd device
+node index.js
+```

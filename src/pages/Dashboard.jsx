@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import QrReader from 'react-qr-reader'
 import {
   Container,
   Grid,
@@ -24,6 +25,8 @@ import Featured from "../components/Featured";
 import abi from "../DeviceContractAbi";
 import MetamaskError from "../components/MetamaskError";
 import NoDevices from "../components/NoDevices";
+import AppHeader from "../components/Header";
+import AddDevice from "../components/AddDevice";
 
 /**
  * Dashboard
@@ -33,7 +36,6 @@ import NoDevices from "../components/NoDevices";
 class Dashboard extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
     const connected = props.ethereum.connected;
 
     this.state = {
@@ -47,27 +49,44 @@ class Dashboard extends Component {
       deviceModalOpen: false,
       addingDevice: false,
       error: false,
+      loading: true,
       addDeviceMessage: "",
-      version: localStorage.getItem("iot_dashboard_version") || "1"
+      version: localStorage.getItem("iot_dashboard_version") || "1",
+      delay: 300,
+      result: 'No result',
     };
-
-    this.connectToEthereum();
 
     this.contract = null;
     this.coinbase = null;
+
+    this.connectToEthereum();
   }
 
+  /**
+   * When dashboard shows, retry to connect to ethereum
+   */
   componentDidMount() {
+    this.connectToEthereum();
+
     this.connectionInterval = setTimeout(
       this.connectToEthereum.bind(this),
-      500
+      300
     );
   }
 
+  /**
+   * Connect to ethereum and initalize blockchain functionality
+   */
   connectToEthereum() {
     const connected = this.props.ethereum.connected;
 
+    console.log(connected);
+
     if (!this.props.ethereum.connected) {
+      this.setState({
+        error: true,
+        loading: false,
+      })
       return;
     }
 
@@ -75,9 +94,14 @@ class Dashboard extends Component {
 
     this.web3 = this.props.ethereum.connection.web3;
 
+    console.log(this.web3);
+
     this.startEthereum();
   }
 
+  /**
+   * Initalize blockchain functionality
+   */
   async startEthereum() {
     this.setState({
       error: false
@@ -89,13 +113,15 @@ class Dashboard extends Component {
       });
 
       return;
+    } else {
+      window.clearInterval(this.connectToEthereum);
+      console.log(`clear interval, ${this.connectionInterval}`);
     }
-
-    console.log(`clear interval, ${this.connectionInterval}`);
-    window.clearInterval(parseInt(this.connectToEthereum));
 
     // Get some props
     const coinbase = await this.web3.eth.getCoinbase();
+
+    console.log(coinbase);
 
     this.coinbase = coinbase;
 
@@ -120,6 +146,9 @@ class Dashboard extends Component {
     this.setState({ loading: false, coinbase, balance });
   }
 
+  /**
+   * Get all device from contract
+   */
   async getDevices() {
     if (!this.contract) {
       return;
@@ -153,6 +182,10 @@ class Dashboard extends Component {
     this.setState({ devices: this.state.devices });
   }
 
+  /**
+   * Get balance from contract
+   * @param {string} address 
+   */
   getBalance(address) {
     return new Promise((resolve, reject) => {
       return this.web3.eth.getBalance(address, (error, result) => {
@@ -165,18 +198,17 @@ class Dashboard extends Component {
     });
   }
 
-  renderAccounts() {
-    return (
-      <option value={this.state.coinbase} key={this.state.coinbase}>
-        {this.state.coinbase}
-      </option>
-    );
-  }
-
+  /**
+   * Show user balance
+   * @param {float} balance 
+   */
   showBalance(balance) {
     return balance && Utils.fromWei(balance.toString(), "ether");
   }
 
+  /**
+   * Search contract for created events
+   */
   getCreatedEvents() {
     if (!this.contract) {
       return;
@@ -190,18 +222,20 @@ class Dashboard extends Component {
         toBlock: "latest"
       },
       (error, events) => {
-        //console.log(events);
         for (let i = 0; i < events.length; i++) {
           var eventObj = events[i];
-          console.log(
-            `Created: ${eventObj.returnValues.name}`,
-            eventObj.returnValues
-          );
+          // console.log(
+          //   `Created: ${eventObj.returnValues.name}`,
+          //   eventObj.returnValues
+          // );
         }
       }
     );
   }
 
+  /**
+   * Search contract for trigger events
+   */
   getTriggerEvents() {
     if (!this.contract) {
       return;
@@ -224,50 +258,10 @@ class Dashboard extends Component {
     );
   }
 
-  async addDevice() {
-    this.setState({
-      addDeviceMessage: ""
-    });
-
-    if (!this.state.deviceName || !this.state.deviceAddress) {
-      this.setState({
-        addDeviceMessage: "Please enter a device name / address"
-      });
-      return;
-    }
-
-    if (!this.contract) {
-      return;
-    }
-
-    this.setState({ addingDevice: true });
-
-    console.log(
-      `Adding device: ${this.state.deviceName}, ${this.state.deviceAddress}`
-    );
-
-    try {
-      await this.contract.methods
-        .addDevice(this.state.deviceName, this.state.deviceAddress)
-        .send({
-          from: this.coinbase,
-          gasPrice: 500000000000
-        });
-    } catch (e) {
-      this.setState({
-        addDeviceMessage: e.message,
-        addingDevice: false
-      });
-
-      return;
-    }
-
-    // Update devices when device is added
-    this.getDevices();
-
-    this.setState({ deviceModalOpen: false, addingDevice: false });
-  }
-
+  /**
+   * Trigger device with ID and state.
+   * @param {object} device 
+   */
   async trigger(id, state) {
     if (!this.contract) {
       return;
@@ -291,6 +285,10 @@ class Dashboard extends Component {
     this.getDevices();
   }
 
+  /**
+   * Remove a device
+   * @param {object} device 
+   */
   async removeDevice(device) {
     if (!this.contract) {
       return;
@@ -310,15 +308,23 @@ class Dashboard extends Component {
 
       // Update devices when device is added
       this.getDevices();
-      console.log(removed);
     } catch (e) {
       console.log("Something went wrong: ", e.message);
+
+      // Update devices when something went wrong
+      this.getDevices();
     }
   }
 
+  /**
+   * Set device to loading state
+   * @param {string} id 
+   */
   deviceIsLoading(id) {
-    if (this.state.devices[parseInt(id) - 1]) {
-      this.state.devices[parseInt(id) - 1].loading = true;
+    const device_to_load = this.getDeviceById(id);
+
+    if (device_to_load && device_to_load.length !== -1) {
+      device_to_load[0].loading = true;
 
       this.setState({
         devices: this.state.devices
@@ -326,10 +332,20 @@ class Dashboard extends Component {
     }
   }
 
+  /**
+   * Get device by id from local devices
+   * @param {string} id 
+   */
+  getDeviceById(id) {
+    return this.state.devices.filter(device => {
+      return device.deviceId === id;
+    });
+  }
+
   renderDevices() {
     return this.state.devices.map((device, key) => {
       return (
-        <Card key={key}>
+        <Card key={device.deviceId}>
           <Card.Content>
             <Dimmer active={device.loading} inverted>
               <Loader inverted />
@@ -370,29 +386,22 @@ class Dashboard extends Component {
     });
   }
 
-  closeModal() {
-    this.setState({ deviceModalOpen: false });
-  }
-
-  openModal() {
-    this.setState({ deviceModalOpen: true });
-  }
-
-  handleChangeDeviceName(event) {
-    this.setState({ deviceName: event.target.value });
-  }
-
-  handleChangeDeviceAddress(event) {
-    this.setState({ deviceAddress: event.target.value });
-  }
-
   render() {
     if (this.state.error) {
-      return <MetamaskError ethereum={this.props.ethereum} />;
+      return (
+        <div>
+          <AppHeader ethereum={this.props.ethereum} />
+          <Container>
+            <Divider hidden />
+            <MetamaskError ethereum={this.props.ethereum} />
+          </Container>
+        </div>
+      );
     }
 
     return (
       <div>
+        <AppHeader ethereum={this.props.ethereum} />
         <Container>
           <Divider hidden />
           {this.state.devices.length === 0 ? <NoDevices /> : null}
@@ -402,74 +411,13 @@ class Dashboard extends Component {
           <h1> Devices </h1>
           <Divider />
 
-          <Card.Group>
+          <Dimmer inverted active={this.state.loading} >
+            <Loader />
+          </Dimmer>
+
+          <Card.Group >
             {this.renderDevices()}
-            <Card className="device">
-              <Card.Content>
-                <Card.Description>
-                  <Modal
-                    trigger={
-                      <Icon
-                        name="add"
-                        size="huge"
-                        className="add-device"
-                        onClick={() => {
-                          this.openModal();
-                        }}
-                      />
-                    }
-                    open={this.state.deviceModalOpen}
-                    onOpen={() => {
-                      this.openModal();
-                    }}
-                    onClose={() => {
-                      this.closeModal();
-                    }}
-                  >
-                    <Modal.Header>Add new device</Modal.Header>
-                    <Modal.Content image>
-                      <Dimmer active={this.state.addingDevice}>
-                        <Loader />
-                      </Dimmer>
-                      <Icon name="plus" /> <br />
-                      <Modal.Description>
-                        <Header>Device Settings</Header>
-                        <Message
-                          hidden={!this.state.addDeviceMessage.length}
-                          negative
-                        >
-                          {this.state.addDeviceMessage}
-                        </Message>
-                        <Form>
-                          <Divider hidden />
-                          <Form.Input
-                            fluid
-                            label="Device name"
-                            value={this.state.deviceName}
-                            onChange={e => this.handleChangeDeviceName(e)}
-                          />
-                          <Form.Input
-                            fluid
-                            label="Device address (can be found on the device app)"
-                            value={this.state.deviceAddress}
-                            onChange={e => this.handleChangeDeviceAddress(e)}
-                          />
-                          <Button
-                            onClick={() => this.addDevice()}
-                            basic
-                            primary
-                            fluid
-                          >
-                            {" "}
-                            Add{" "}
-                          </Button>
-                        </Form>
-                      </Modal.Description>
-                    </Modal.Content>
-                  </Modal>
-                </Card.Description>
-              </Card.Content>
-            </Card>
+            <AddDevice contract={this.contract} coinbase={this.coinbase} getDevices={this.getDevices.bind(this)} />
           </Card.Group>
         </Container>
       </div>

@@ -1,41 +1,71 @@
 import React, { Component } from "react";
-import { Container, Button, Menu } from "semantic-ui-react";
+import { Container, Button, Menu, Dropdown } from "semantic-ui-react";
 import { Link, NavLink } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 
-class Header extends Component {
+class AppHeader extends Component {
   constructor(props) {
     super(props);
+
+    const address = localStorage.getItem("eth_address");
+
     this.state = {
-      version: localStorage.getItem("iot_dashboard_version") || "1"
-    };
+      isHome: this.props.home ? true : false,
+      coinbase: "",
+      options: [
+        {
+          key: 1,
+          address: `Your address: ${address}`,
+          value: 1
+        }
+      ]
+    }
+
+  }
+
+  omponentWillReceiveProps(nextProps) {
+    this.updateMenu(nextProps);
+  }
+
+
+  async updateMenu(props) {
+    if (props.ethereum && props.ethereum.accounts) {
+      console.log(props.ethereum.accounts);
+
+      this.setState({
+        options: [
+          {
+            key: 1,
+            address: `Your address: ${props.ethereum.accounts.value && props.ethereum.accounts.value[0]}`,
+            value: 1
+          }
+        ]
+      });
+    }
+  }
+
+  async componentDidMount() {
+    if (this.props.ethereum && this.props.ethereum.connected) {
+
+    }
   }
 
   render() {
-    console.log(this.props.location.pathname);
     return (
       <header>
         <Container>
-          <Menu secondary className={this.state.menuColorClass}>
+          <Menu secondary>
             <NavLink exact to="/" name="home" className="logo">
               Decentralized IOT Dashboard
             </NavLink>
 
-            <Menu.Menu position="right">
-              <div className={this.state.version === "1" ? "" : "hide"}>
-                <Menu.Item to="/about" as={Link} name="about" />
-                <Menu.Item to="/faq" as={Link} name="faq" />
-                <Button
-                  to="/login"
-                  as={Link}
-                  primary
-                  className={
-                    this.props.location.pathname === "/dashboard" ? "hide" : ""
-                  }
-                >
-                  Log in
-                </Button>
-              </div>
+            <Menu.Menu position="right" className={(this.state.isHome ? "hide" : null)}>
+              <Dropdown
+                text="Logged in with Metamask"
+                options={this.state.options}
+                simple
+                item
+              />
             </Menu.Menu>
           </Menu>
         </Container>
@@ -44,4 +74,4 @@ class Header extends Component {
   }
 }
 
-export default withRouter(Header);
+export default withRouter(AppHeader);

@@ -5,6 +5,23 @@
 
 <head>
   <% include ../partials/head %>
+
+    <style>
+      .device-address {
+        padding: 10px 20px;
+        background: #FFFFFF;
+        border: 1px solid #979797;
+        margin-bottom: 30px;
+      }
+
+    </style>
+
+    <script>
+      function refreshPage() {
+        window.location.reload();
+      }
+
+    </script>
 </head>
 
 <body class="container">
@@ -15,30 +32,56 @@
 
   <main>
     <hr />
-    <div class="well well-lg">
-      Your device address:
+    <h1>Device address</h1>
+    <br />
+    <p>
+      <strong>Step 1:</strong> Log in to the
+      <a href="#">dashboard</a>
+    </p>
+    <p>
+      <strong>Step 2:</strong> Click on the add device (+) button in your dashboard
+    </p>
+    <p>
+      <strong>Step 3:</strong> Copy & paste your address below
+    </p>
+    <div class="well well-lg device-address">
       <strong>
         <%=wallet%>
       </strong>
     </div>
-    <hr />
-    <div class="jumbotron">
-      <h1>
-        <%-(device && device.returnValues.name)%>
-      </h1>
-      <p>Your device ID is:
-        <strong>
-          <%=device_id %>
-        </strong>
-      </p>
 
-      <p>
-        Current state:
-        <strong>
-          <%-(device_state && parseInt(device_state.state, 10) === 1 ? "On" : "Off")%>
-        </strong>
-      </p>
-    </div>
+    <button class="btn btn-outline-primary btn-block" onclick="refreshPage()">
+      I added my device
+    </button>
+
+    <hr />
+    <%if (device_state && device_state.deviceName !== "deleted") { %>
+      <div class="jumbotron">
+        <h1>
+          <%-(device && device.returnValues.name)%>
+        </h1>
+
+        <div class="well well-lg">
+          Your device address:
+          <strong>
+            <%=wallet%>
+          </strong>
+        </div>
+
+        <div className="">
+          <strong>
+            <%=device_id %>
+          </strong>
+        </div>
+
+        <p>
+          Current state:
+          <strong>
+            <%-(parseInt(device_state.state, 10) === 1 ? "On" : "Off")%>
+          </strong>
+        </p>
+      </div>
+      <% } %>
   </main>
 
   <footer>
